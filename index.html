@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT4 INVADERS</title>
+    <style>
+        @font-face {
+            font-family: 'space-font';
+            src: url('SHPinscher-Regular.otf') format('truetype');
+        }
+
+        body {
+            font-family: 'space-font', sans-serif;
+            background-image: url('/images/background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            margin: 0;
+            height: 100vh;
+        }
+
+        .instruction-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 300px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .start-instruction {
+            margin-top: 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+
+        .start-instruction {
+            cursor: pointer;
+            transition: text-shadow 0.3s ease-in-out; /* Add transition for the text-shadow property */
+        }
+
+        .glow {
+            text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff, 0 0 40px #ffffff;
+            transition: text-shadow 0.3s ease-in-out; /* Add transition for the text-shadow property */
+        }
+
+        #game-lost-container,
+        #game-won-container {
+            z-index: -1; /* Add this line to hide the containers initially */
+            opacity: 0;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .fade-out {
+            animation: fadeOut 1s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                z-index: 1;
+            }
+            to {
+                opacity: 0;
+                z-index: -1;
+            }
+        }
+
+        .point-values {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .point-value {
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .point-value img {
+            width: 30px; /* Adjust the image size if needed */
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .point-value span {
+            font-size: 1.2rem;
+            margin-right: 30px;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(1px, 1px) rotate(0deg);
+            }
+            10% {
+                transform: translate(-1px, -2px) rotate(-1deg);
+            }
+            20% {
+                transform: translate(-3px, 0px) rotate(1deg);
+            }
+            30% {
+                transform: translate(3px, 2px) rotate(0deg);
+            }
+            40% {
+                transform: translate(1px, -1px) rotate(1deg);
+            }
+            50% {
+                transform: translate(-1px, 2px) rotate(-1deg);
+            }
+            60% {
+                transform: translate(-3px, 1px) rotate(0deg);
+            }
+            70% {
+                transform: translate(3px, 1px) rotate(-1deg);
+            }
+            80% {
+                transform: translate(-1px, -1px) rotate(1deg);
+            }
+            90% {
+                transform: translate(1px, 2px) rotate(0deg);
+            }
+            100% {
+                transform: translate(1px, -2px) rotate(-1deg);
+            }
+        }
+
+        .shake {
+            animation: shake 1.5s;
+            animation-timing-function: ease-out;
+        }
+    </style>
+</head>
+<body>
+<div class="instruction-container" id="instruction-container">
+    <h1>GPT4 INVADERS</h1>
+    <div class="point-values">
+        <div class="point-value">
+            <img src="images/invader2_0.png" alt="Invader 1">
+            <span>30 points</span>
+        </div>
+        <div class="point-value">
+            <img src="images/invader1_0.png" alt="Invader 2">
+            <span>20 points</span>
+        </div>
+        <div class="point-value">
+            <img src="images/invader3_0.png" alt="Invader 3">
+            <span>10 points</span>
+        </div>
+        <div class="point-value">
+            <img src="images/ufo.png" alt="UFO">
+            <span>? free life / extra points</span>
+        </div>
+    </div>
+    <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <g transform="translate(0, 2)">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </g>
+        </svg>
+        LEFT ARROW - MOVE PLAYER LEFT
+    </p>
+    <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <g transform="translate(0, 2)">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </g>
+        </svg>
+
+        RIGHT ARROW - MOVE PLAYER RIGHT
+    </p>
+    <p>&nbsp;&nbsp;&nbsp;SPACE BAR - FIRE PROJECTILE</p>
+    <p id="startGame" class="start-instruction" style="cursor: pointer">CLICK HERE TO BEGIN</p>
+</div>
+<div class="instruction-container" id="game-lost-container">
+    <h1>GPT4 INVADERS</h1>
+    <p>YOU LOST!</p>
+    <p id="retryGame" class="start-instruction" style="cursor: pointer">CLICK HERE TO RETRY</p>
+</div>
+<div class="instruction-container" id="game-won-container">
+    <h1>GPT4 INVADERS</h1>
+    <p>YOU WON!</p>
+    <p id="playAgain" class="start-instruction" style="cursor: pointer">CLICK HERE TO BORE YOURSELF</p>
+</div>
+<canvas id="gameCanvas" width="800" height="1000"></canvas>
+<script type="module" src="main.js"></script>
+</body>
+</html>
