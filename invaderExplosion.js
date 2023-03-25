@@ -1,19 +1,18 @@
 export class InvaderExplosion {
-    constructor(x, y, radius, numParticles) {
+    constructor(x, y, numParticles, duration) {
         this.x = x;
         this.y = y;
-        this.radius = radius;
         this.numParticles = numParticles;
         this.particles = this.createParticles();
         this.timer = 0;
-        this.duration = 300;
+        this.duration = duration;
     }
 
     createParticles() {
         const particles = [];
         for (let i = 0; i < this.numParticles; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const speed = 0.01 + Math.random() * 0.6;
+            const speed = 0.01 + Math.random() * 3.0;
             const vx = Math.cos(angle) * speed;
             const vy = Math.sin(angle) * speed;
             const particle = {
@@ -38,7 +37,7 @@ export class InvaderExplosion {
             particle.x += particle.vx;
             particle.y += particle.vy;
             particle.rotation += particle.rotationSpeed;
-            particle.alpha -= 0.001;
+            particle.alpha -= 0.005;
         });
     }
 

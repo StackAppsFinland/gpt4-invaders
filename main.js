@@ -18,13 +18,9 @@ window.topMargin = 80;
 let greenLineBottom = 80;
 let gameStarted = false;
 let sounds;
-let invaderMovementIndex = 0;
 let swapDirection = false;
 let moveInvaderDown = false;
-let invaderMovementSpeed = 10;
-let lastInvaderUpdateTime = 0;
-let invaderMoveSpeed = 5.0;
-let invaderInterval;
+let invaderMoveSpeed = 10.0;
 let moveDirection = 'right';
 let playerVisible = true;
 let lives = 3;
@@ -46,7 +42,6 @@ playerImage.src = 'images/glow_player.png';
 playerImage.width = 20;
 playerImage.height = 20;
 
-const centerY = canvas.height / 2;
 const blockSize = 3;
 const blockCountX = 35;
 const blockCountY = 24;
@@ -172,7 +167,7 @@ function fireFromRandomInvader(bottomInvaders) {
             4,
             10,
             ctx,
-            1.8
+            4.0
         );
         invaderProjectiles.push(projectile);
     }
@@ -224,7 +219,7 @@ function handleKeyDown(event) {
     if (!pauseGame) {
         if (event.key === ' ') {
             if (!playerProjectile) {
-                playerProjectile = new Projectile(player.x + player.width / 2 - 2, player.y, 4, 10, ctx, -9);
+                playerProjectile = new Projectile(player.x + player.width / 2 - 2, player.y, 4, 10, ctx, -12 );
                 sounds.playFiringSound()
             }
         } else {
@@ -271,7 +266,10 @@ function fireProjectileLoop() {
     fireFromRandomInvader(bottomInvaders, invaderProjectiles);
 
     const newTimeout = calculateProjectileTimeout();
-    setTimeout(fireProjectileLoop, newTimeout);
+
+    setTimeout(() => {
+        requestAnimationFrame(fireProjectileLoop);
+    }, newTimeout);
 }
 
 function moveInvadersLoop() {
@@ -303,7 +301,10 @@ function moveInvadersLoop() {
     }
     
     const newTimeout = calculateTimeout(invaders);
-    setTimeout(moveInvadersLoop, newTimeout);
+
+    setTimeout(() => {
+        requestAnimationFrame(moveInvadersLoop);
+    }, newTimeout);
 }
 
 function delayAndThenGameOver() {
@@ -413,7 +414,7 @@ function drawScoreDisplay() {
 }
 
 function update() {
-    const moveSpeed = 1.55;
+    const moveSpeed = 3.0;
 
     if (!pauseGame && keysPressed.ArrowLeft) {
         player.x = Math.max(0, player.x - moveSpeed);
@@ -433,20 +434,6 @@ function update() {
     // Update explosions
     explosions.forEach(explosion => explosion.update());
 
-    // Remove the barriers when the invaders hit them
-    for (let i = 0; i < invadersInColumns.length; i++) {
-        const invader = invadersInColumns[i][invadersInColumns[i].length - 1];
-        if (invader.y + invader.height >= barriers[0].y) {
-            for (let j = 0; j < barriers.length; j++) {
-                const barrier = barriers[j];
-                if (invader.collision(barrier)) {
-                    // Remove the barrier block that the invader collided with
-                    barrier.damage();
-                }
-            }
-        }
-    }
-
     // Check invader for collisions
     invaderProjectiles.forEach((projectile, index) => {
         projectile.update();
@@ -457,8 +444,8 @@ function update() {
             const explosion = new ParticleExplosion(
                 player.x + player.width / 2,
                 player.y + player.height / 2,
-                600,
-                500
+                300,
+                400
             );
             sounds.playPlayerExplodeSound();
             shakeCanvas();
@@ -471,7 +458,7 @@ function update() {
 
         if (playerProjectile && isColliding(playerProjectile, projectile)) {
             invaderProjectiles.splice(index, 1);
-            const explosion = new ParticleExplosion(projectile.x, projectile.y, 25, 25);
+            const explosion = new ParticleExplosion(projectile.x, projectile.y, 25, 250);
             explosions.push(explosion);
             playerProjectile = null
             return;
@@ -479,7 +466,7 @@ function update() {
 
         if (projectile.y + projectile.height > canvas.height - greenLineBottom) {
             invaderProjectiles.splice(index, 1);
-            const explosion = new ParticleExplosion(projectile.x, projectile.y, 25, 25);
+            const explosion = new ParticleExplosion(projectile.x, projectile.y, 25, 250);
             explosions.push(explosion);
             return;
         }
@@ -549,9 +536,9 @@ function update() {
                 if (isColliding(playerProjectile, invaders[i])) {
                     invaders[i].removeFromColumns();
                     sounds.playInvaderExplodeSound();
-                    const explosion = new ParticleExplosion(invaders[i].x + (invaders[i].width / 2.0), invaders[i].y + (invaders[i].height / 2.0) , 150, 100);
+                    const explosion = new ParticleExplosion(invaders[i].x + (invaders[i].width / 2.0), invaders[i].y + (invaders[i].height / 2.0) , 150, 50);
                     explosions.push(explosion);
-                    const invaderExplosion = new InvaderExplosion(invaders[i].x + (invaders[i].width / 2.0), invaders[i].y + (invaders[i].height / 2.0) , 150, 5);
+                    const invaderExplosion = new InvaderExplosion(invaders[i].x + (invaders[i].width / 2.0), invaders[i].y + (invaders[i].height / 2.0) , 10, 30);
                     explosions.push(invaderExplosion);
                     player.score += invaders[i].scoreAmount
                     playerProjectile = null;
