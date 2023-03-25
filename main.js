@@ -42,7 +42,7 @@ let barriers = [];
 let explosions = [];
 
 const playerImage = new Image();
-playerImage.src = 'gpt4-invaders/images/glow_player.png';
+playerImage.src = 'images/glow_player.png';
 playerImage.width = 20;
 playerImage.height = 20;
 
@@ -66,7 +66,7 @@ let player = new Player(canvas.width / 2 - (playerWidth / 2), canvas.height - gr
 let {invaders, invadersInColumns} = createInvaders(5, 11);
 
 const ufoImage = new Image();
-ufoImage.src = 'gpt4-invaders/images/ufo.png';
+ufoImage.src = 'images/ufo.png';
 
 function drawGreenLine() {
     ctx.strokeStyle = 'green';
@@ -113,8 +113,8 @@ function createInvaders(rows, columns) {
                 imageOffset = 6;
                 scoreAmount = 10;
             }
-            invaderImage.src = 'gpt4-invaders/images/glow_invader' + invaderNumber + '_0.png';
-            altInvaderImage.src = 'gpt4-invaders/images/glow_invader' + invaderNumber + '_1.png';
+            invaderImage.src = 'images/glow_invader' + invaderNumber + '_0.png';
+            altInvaderImage.src = 'images/glow_invader' + invaderNumber + '_1.png';
             const invader = new Invader(
                 x - imageOffset,
                 y,
