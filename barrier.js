@@ -1,5 +1,5 @@
 export class Barrier {
-    constructor(x, y, blockSize, blockCountX, blockCountY, ctx) {
+    constructor(x, y, blockSize, blockCountX, blockCountY) {
         this.x = x;
         this.y = y;
         this.blockSize = blockSize;
@@ -79,7 +79,7 @@ export class Barrier {
                         rect.x + rect.width > block.x &&
                         rect.y < block.y + block.height &&
                         rect.y + rect.height > block.y) {
-                        this.explodeBlocks(i, j);
+                        this.explodeBlocks(i, j, false);
                         return true;
                     }
                 }
@@ -88,21 +88,44 @@ export class Barrier {
         return false;
     }
 
-    explodeBlocks(blockX, blockY) {
+    collisionDetectionByInvader(rect) {
+        if (rect) {
+            for (let i = 0; i < this.blockCountX; i++) {
+                for (let j = 0; j < this.blockCountY; j++) {
+                    const block = this.blocks[i][j];
+                    if (block.visible &&
+                        rect.x < block.x + block.width &&
+                        rect.x + rect.width > block.x &&
+                        rect.y < block.y + block.height &&
+                        rect.y + rect.height > block.y) {
+                        this.explodeBlocks(i, j, true);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    explodeBlocks(blockX, blockY, isInvader) {
         // Remove the matching block
+        let amount = isInvader ? 200 : 30;
+        let radiusAmount = isInvader ? 10 : 5;
+
+
         this.blocks[blockX][blockY].visible = false;
 
         // Define a helper function to remove blocks with a given probability
-        const removeBlockWithProbability = (x, y) => {
+        const hideBlocks = (x, y) => {
             if (this.blocks[x] && this.blocks[x][y] && this.blocks[x][y].visible) {
                 this.blocks[x][y].visible = false;
             }
         };
 
         // Iterate through radii 1 to 5
-        for (let radius = 0; radius <= 5; radius++) {
+        for (let radius = 0; radius <= radiusAmount; radius++) {
             // Remove 5 random blocks for the current radius
-            for (let i = 0; i < 30 + (radius * 2); i++) {
+            for (let i = 0; i < amount + (radius * 2); i++) {
                 // Calculate a random angle and use the current radius as distance
                 const angle = Math.random() * 2 * Math.PI;
 
@@ -110,8 +133,7 @@ export class Barrier {
                 const x = blockX + Math.round(radius * Math.cos(angle));
                 const y = blockY + Math.round(radius * Math.sin(angle));
 
-                // Remove the block with a probability of 1 (since we want to remove the selected block)
-                removeBlockWithProbability(x, y);
+                hideBlocks(x, y);
             }
         }
     }

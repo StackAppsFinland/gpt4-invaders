@@ -91,7 +91,8 @@ function invaders() {
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < columns; col++) {
                 const x = leftRightMargin + col * (invaderSpacing + leftRightMargin) + 10;
-                const y = row * (invaderSpacing + leftRightMargin) + 140;
+               // const y = row * (invaderSpacing + leftRightMargin) + 140;
+                const y = row * (invaderSpacing + leftRightMargin) + 422;
                 const invaderImage = new Image();
                 const altInvaderImage = new Image();
                 let invaderNumber = 2;
@@ -203,7 +204,7 @@ function invaders() {
         if (!pauseGame) {
             if (event.key === ' ') {
                 if (!playerProjectile) {
-                    playerProjectile = new Projectile(player.x + player.width / 2 - 2, player.y, 4, 10, ctx, -3.0 * speedMultiplier);
+                    playerProjectile = new Projectile(player.x + player.width / 2 - 2, player.y, 4, 10, ctx, -1.6 * speedMultiplier);
                     sounds.playFiringSound()
                 }
             } else {
@@ -247,6 +248,16 @@ function invaders() {
 
     function fireProjectileLoop() {
         const bottomInvaders = findBottomInvaders();
+
+        // remove the blocks when the bottom invaders hit them.
+        for (let i=0;i<bottomInvaders.length;i++) {
+            if (bottomInvaders[i].y + bottomInvaders[i].height  >= 700) {
+                for(let j=0;j<barriers.length;j++) {
+                    barriers[j].collisionDetectionByInvader(bottomInvaders[i]);
+                }
+            }
+        }
+
         fireFromRandomInvader(bottomInvaders, invaderProjectiles);
 
         const newTimeout = calculateProjectileTimeout();
@@ -453,7 +464,6 @@ function invaders() {
 
             // Projectile hits the ground
             if (projectile.y + projectile.height > canvas.height - greenLineBottom) {
-                console.log("bottom " + explosionSpeed)
                 invaderProjectiles.splice(index, 1);
                 const explosion = new ParticleExplosion(projectile.x, projectile.y, 25, 250, explosionSpeed, alphaSpeed);
                 explosions.push(explosion);
