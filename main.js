@@ -262,7 +262,7 @@ function invaders() {
             moveInvaderDown = false;
 
             if (swapDirection) {
-                if (moveDirection == 'right') {
+                if (moveDirection === 'right') {
                     moveDirection = 'left';
                 } else {
                     moveDirection = 'right';
@@ -361,7 +361,6 @@ function invaders() {
             gameStarted = false
             pauseGame = true
             updateCursorStyle();
-            return;
         }
     }
 
@@ -459,7 +458,7 @@ function invaders() {
                 return;
             }
 
-            barriers.forEach((barrier, bIndex) => {
+            barriers.forEach((barrier) => {
                 if (barrier.collisionDetection(projectile)) {
                     // Create an explosion on collision
                     const explosion = new ParticleExplosion(projectile.x + (projectile.width / 2.0),
@@ -523,7 +522,6 @@ function invaders() {
                     playerProjectile.y, 25, 25, explosionSpeed, alphaSpeed);
                 explosions.push(explosion);
                 playerProjectile = null;
-                return
             } else {
                 // Check for collisions between the projectile and each invader
                 for (let i = 0; i < invaders.length; i++) {
@@ -544,7 +542,7 @@ function invaders() {
                 }
 
                 if (playerProjectile) {
-                    barriers.forEach((barrier, bIndex) => {
+                    barriers.forEach((barrier) => {
                         if (barrier.collisionDetection(playerProjectile)) {
                             // Create an explosion on collision of lower barrier
                             const explosion = new ParticleExplosion(playerProjectile.x + (playerProjectile.width / 2.0), playerProjectile.y,
@@ -626,7 +624,6 @@ function invaders() {
             });
             pauseGame = true
             gameStarted = false
-            return;
         }
     }
 
