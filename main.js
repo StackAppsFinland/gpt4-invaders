@@ -91,8 +91,7 @@ function invaders() {
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < columns; col++) {
                 const x = leftRightMargin + col * (invaderSpacing + leftRightMargin) + 10;
-               // const y = row * (invaderSpacing + leftRightMargin) + 140;
-                const y = row * (invaderSpacing + leftRightMargin) + 422;
+                const y = row * (invaderSpacing + leftRightMargin) + 140;
                 const invaderImage = new Image();
                 const altInvaderImage = new Image();
                 let invaderNumber = 2;
@@ -347,8 +346,8 @@ function invaders() {
             setTimeout(() => {
                 let ufoDirection = Math.random() > 0.5 ? 1 : -1;
                 let ufoX = ufoDirection === 1 ? -ufoImage.width / ufoImageSize : canvas.width;
-                ufo = new UFO(ufoImage, ufoX, window.topMargin, 0.85 * speedMultiplier, ufoDirection, ctx);
-                ufoInterval = setInterval(moveUFO, 1000 / 60); // Call moveUFO at 60 FPS
+                ufo = new UFO(ufoImage, ufoX, window.topMargin, 0.5 * speedMultiplier, ufoDirection, ctx);
+                ufoInterval = setInterval(moveUFO,1000 / 60); // Call moveUFO at 60 FPS
                 ufoOnScreen = true;
             }, randomInterval);
         }
