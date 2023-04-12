@@ -442,6 +442,7 @@ function invaders() {
                 delayAndThenGameOver();
             }
 
+            // Projectile to projectile collision
             if (playerProjectile && isColliding(playerProjectile, projectile)) {
                 invaderProjectiles.splice(index, 1);
                 const explosion = new ParticleExplosion(projectile.x, projectile.y, 25, 250, explosionSpeed, alphaSpeed);
@@ -450,6 +451,7 @@ function invaders() {
                 return;
             }
 
+            // Projectile hits the ground
             if (projectile.y + projectile.height > canvas.height - greenLineBottom) {
                 console.log("bottom " + explosionSpeed)
                 invaderProjectiles.splice(index, 1);
@@ -458,6 +460,7 @@ function invaders() {
                 return;
             }
 
+            // Projectile hits a barrier
             barriers.forEach((barrier) => {
                 if (barrier.collisionDetection(projectile)) {
                     // Create an explosion on collision
@@ -474,6 +477,7 @@ function invaders() {
         if (playerProjectile) {
             playerProjectile.update();
 
+            // Ufo is hit by projectile
             if (ufo && ufo.collision(playerProjectile)) {
                 clearInterval(ufoInterval);
                 // Create an explosion on collision
@@ -481,9 +485,9 @@ function invaders() {
                     ufo.x,
                     ufo.y + ufo.height / 2,
                     600,
-                    300,
+                    1000,
                     explosionSpeed,
-                    alphaSpeed
+                    alphaSpeed / 3.0
                 );
                 explosions.push(explosion);
 
@@ -491,9 +495,9 @@ function invaders() {
                     ufo.x + ufo.width,
                     ufo.y + ufo.height / 2,
                     600,
-                    300,
+                    1000,
                     explosionSpeed,
-                    alphaSpeed
+                    alphaSpeed / 3.0
                 );
                 explosions.push(explosion2);
 
