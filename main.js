@@ -29,7 +29,6 @@ function invaders() {
     let ufoSoundPlayed = false;
     let ufo;
     let ufoOnScreen = false;
-    let ufoInterval;
     let lowestInvaderYPos = 0;
 
     let playerProjectile = null;
@@ -317,6 +316,7 @@ function invaders() {
 
             pauseGame = false;
             playerVisible = true;
+            scheduleUFO();
         }, 4000);
     }
 
@@ -329,8 +329,9 @@ function invaders() {
 
             ufo.move();
 
-            if (ufo.x < -ufo.width || ufo.x > canvas.width) {
-                clearInterval(ufoInterval);
+            if ((ufo.direction > 0 && ufo.x - ufo.width > canvas.width) ||
+                (ufo.direction < 0 && ufo.x + (ufo.width * 2) < 0)) {
+                ufo = null;
                 ufoOnScreen = false;
                 ufoSoundPlayed = false;
                 sounds.stopUfoSound();
@@ -345,9 +346,8 @@ function invaders() {
             const randomInterval = 10000 + Math.random() * 30000;
             setTimeout(() => {
                 let ufoDirection = Math.random() > 0.5 ? 1 : -1;
-                let ufoX = ufoDirection === 1 ? -ufoImage.width / ufoImageSize : canvas.width;
+                let ufoX = ufoDirection === 1 ? -ufoImage.width * 2 : canvas.width + ufoImage.width;
                 ufo = new UFO(ufoImage, ufoX, window.topMargin, 0.5 * speedMultiplier, ufoDirection, ctx);
-                ufoInterval = setInterval(moveUFO,1000 / 60); // Call moveUFO at 60 FPS
                 ufoOnScreen = true;
             }, randomInterval);
         }
@@ -426,6 +426,8 @@ function invaders() {
             }
         });
 
+        moveUFO();
+
         // Update explosions
         explosions.forEach(explosion => explosion.update());
 
@@ -488,7 +490,6 @@ function invaders() {
 
             // Ufo is hit by projectile
             if (ufo && ufo.collision(playerProjectile)) {
-                clearInterval(ufoInterval);
                 // Create an explosion on collision
                 const explosion = new ParticleExplosion(
                     ufo.x,
