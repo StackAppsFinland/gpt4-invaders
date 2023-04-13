@@ -1,0 +1,15 @@
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+target/
+
+# Build artifacts
+dist/
+build/
+bin/
+*.war
+*.jar
+*.ear

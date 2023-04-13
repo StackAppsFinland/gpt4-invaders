@@ -39,7 +39,7 @@ function invaders() {
     let calibrateSpeed = true;
 
     const playerImage = new Image();
-    playerImage.src = 'images/glow_player.png';
+    playerImage.src = 'images/player.png';
     playerImage.width = 20;
     playerImage.height = 20;
 
@@ -109,8 +109,8 @@ function invaders() {
                     imageOffset = 6;
                     scoreAmount = 10;
                 }
-                invaderImage.src = 'images/glow_invader' + invaderNumber + '_0.png';
-                altInvaderImage.src = 'images/glow_invader' + invaderNumber + '_1.png';
+                invaderImage.src = 'images/invader' + invaderNumber + '_0.png';
+                altInvaderImage.src = 'images/invader' + invaderNumber + '_1.png';
                 const invader = new Invader(
                     x - imageOffset,
                     y,
@@ -192,26 +192,7 @@ function invaders() {
         if (invaders[i]) invaders[i].swapImages();
     }
 
-    function handleKeyUp(event) {
-        keysPressed[event.key] = false;
-    }
-
-    function handleKeyDown(event) {
-        if (calibrateSpeed) return;
-
-        if (!pauseGame) {
-            if (event.key === ' ') {
-                if (!playerProjectile) {
-                    playerProjectile = new Projectile(player.x + player.width / 2 - 2, player.y, 4, 10, ctx, -1.6 * speedMultiplier);
-                    sounds.playFiringSound()
-                }
-            } else {
-                keysPressed[event.key] = true;
-            }
-        }
-    }
-
-    function calculateTimeout() {
+    function calculateInvaderSpeedTimeout() {
         const baseTimeout = 500;
         const minTimeout = 10;
         const maxInvaders = 55; // 5 rows * 11 columns
@@ -224,6 +205,26 @@ function invaders() {
 
         // Make sure the timeout value stays within the range [minTimeout, baseTimeout]
         return Math.max(minTimeout, Math.min(baseTimeout, newTimeout));
+    }
+
+    function moveUFO() {
+        if (ufo) {
+            if (!ufoSoundPlayed) {
+                sounds.playUfoSound();
+                ufoSoundPlayed = true;
+            }
+
+            ufo.move();
+
+            if ((ufo.direction > 0 && ufo.x - ufo.width > canvas.width) ||
+                (ufo.direction < 0 && ufo.x + (ufo.width * 2) < 0)) {
+                ufo = null;
+                ufoOnScreen = false;
+                ufoSoundPlayed = false;
+                sounds.stopUfoSound();
+                scheduleUFO();
+            }
+        }
     }
 
     function calculateProjectileTimeout() {
@@ -242,6 +243,25 @@ function invaders() {
 
         // Make sure the timeout value stays within the range [minTimeout, baseTimeout]
         return Math.max(minTimeout, Math.min(baseTimeout, randomizedTimeout));
+    }
+
+    function handleKeyUp(event) {
+        keysPressed[event.key] = false;
+    }
+
+    function handleKeyDown(event) {
+        if (calibrateSpeed) return;
+
+        if (!pauseGame) {
+            if (event.key === ' ') {
+                if (!playerProjectile) {
+                    playerProjectile = new Projectile(player.x + player.width / 2 - 2, player.y, 4, 10, ctx, -1.6 * speedMultiplier);
+                    sounds.playFiringSound()
+                }
+            } else {
+                keysPressed[event.key] = true;
+            }
+        }
     }
 
     function fireProjectileLoop() {
@@ -291,9 +311,11 @@ function invaders() {
                     swapDirection = true
                 }
             }
+
+
         }
 
-        const newTimeout = calculateTimeout(invaders);
+        const newTimeout = calculateInvaderSpeedTimeout(invaders);
 
         setTimeout(() => {
             requestAnimationFrame(moveInvadersLoop);
@@ -320,29 +342,8 @@ function invaders() {
         }, 4000);
     }
 
-    function moveUFO() {
-        if (ufo) {
-            if (!ufoSoundPlayed) {
-                sounds.playUfoSound();
-                ufoSoundPlayed = true;
-            }
-
-            ufo.move();
-
-            if ((ufo.direction > 0 && ufo.x - ufo.width > canvas.width) ||
-                (ufo.direction < 0 && ufo.x + (ufo.width * 2) < 0)) {
-                ufo = null;
-                ufoOnScreen = false;
-                ufoSoundPlayed = false;
-                sounds.stopUfoSound();
-                scheduleUFO();
-            }
-        }
-    }
-
     function scheduleUFO() {
         if (!ufoOnScreen && !pauseGame) {
-            const ufoImageSize = 1.5
             const randomInterval = 10000 + Math.random() * 30000;
             setTimeout(() => {
                 let ufoDirection = Math.random() > 0.5 ? 1 : -1;
