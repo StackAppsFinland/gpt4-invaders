@@ -13,6 +13,8 @@ function invaders() {
     const keysPressed = {
         ArrowLeft: false,
         ArrowRight: false,
+        KeyZ: false,
+        KeyX: false
     };
 
     window.topMargin = 80;
@@ -255,7 +257,7 @@ function invaders() {
         if (!pauseGame) {
             if (event.key === ' ') {
                 if (!playerProjectile) {
-                    playerProjectile = new Projectile(player.x + player.width / 2 - 2, player.y, 4, 10, ctx, -1.6 * speedMultiplier);
+                    playerProjectile = new Projectile(player.x + player.width / 2 - 2, player.y, 4, 10, ctx, -2.5 * speedMultiplier);
                     sounds.playFiringSound()
                 }
             } else {
@@ -412,11 +414,11 @@ function invaders() {
         const explosionSpeed = 0.8 * speedMultiplier;
         const alphaSpeed = 0.01 * speedMultiplier;
 
-        if (!pauseGame && keysPressed.ArrowLeft) {
+        if (!pauseGame && (keysPressed.ArrowLeft || keysPressed.z)) {
             player.x = Math.max(0, player.x - moveSpeed);
         }
 
-        if (!pauseGame && keysPressed.ArrowRight) {
+        if (!pauseGame && (keysPressed.ArrowRight || keysPressed.x)) {
             player.x = Math.min(canvas.width - player.width, player.x + moveSpeed);
         }
 
